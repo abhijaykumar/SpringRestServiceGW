@@ -17,34 +17,42 @@ public class WeatherController {
 
     @PostMapping("/weather")
     Weather weather(@RequestBody WeatherSearchCriteria searchCriteria) {
+        if (searchCriteria.getZipCode() == null || searchCriteria.getZipCode().equals("")) {
+            throw new IncorrectZipException(searchCriteria.getZipCode());
+        }
         Weather weatherResp = new Weather();
+        boolean zipFound = false;
         List<Weather> weatherList = repository.findAll();
         for (Weather weather : weatherList) {
             if (weather.getZipCode().equals(searchCriteria.getZipCode())) {
                 //weatherResp = weather;
                 weatherResp = setWeatherHeadline(weather);
+                zipFound = true;
                 break;
             }
+        }
+        if (!zipFound) {
+            throw new ZipNotFoundException(searchCriteria.getZipCode());
         }
         return weatherResp;
     }
 
     private Weather setWeatherHeadline(Weather weather) {
         String headline;
-        Float maxTemp = Float.parseFloat(weather.getTemperatureMax());
-        if(maxTemp < 65) {
+        float maxTemp = Float.parseFloat(weather.getTemperatureMax());
+        if (maxTemp < 65) {
             headline = "Cold";
-        } else if(maxTemp > 90) {
+        } else if (maxTemp > 90) {
             headline = "Warm";
         } else {
             headline = "Moderate";
         }
 
-        if(Float.parseFloat(weather.getRainfall()) > 0.2) {
+        if (Float.parseFloat(weather.getRainfall()) > 0.2) {
             headline += ", Rainy";
         }
 
-        if(Float.parseFloat(weather.getAvgWindSpeed()) > 10) {
+        if (Float.parseFloat(weather.getAvgWindSpeed()) > 10) {
             headline += ", Windy";
         }
 

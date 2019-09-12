@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.List;
 
@@ -23,7 +24,7 @@ class LoadWeather {
             try {
                 // Create an object of file reader
                 // class with CSV file as a parameter.
-                FileReader filereader = new FileReader("C:\\Users\\abhijay.kumar\\Desktop\\weather.csv");
+                FileReader filereader = new FileReader("C:\\WeatherData\\weather.csv");
 
                 // create csvReader object and skip first Line
                 CSVReader csvReader = new CSVReaderBuilder(filereader)
@@ -38,6 +39,8 @@ class LoadWeather {
 
                     log.info("Preloading " + repository.save(weatherObj));
                 }
+            } catch (FileNotFoundException fnfEx){
+                log.error("The weather CSV file was not found in C:\\WeatherData.");
             }
             catch (Exception e) {
                 e.printStackTrace();
