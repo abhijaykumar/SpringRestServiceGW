@@ -17,22 +17,27 @@ public class WeatherController {
 
     @PostMapping("/weather")
     Weather weather(@RequestBody WeatherSearchCriteria searchCriteria) {
-        if (searchCriteria.getZipCode() == null || searchCriteria.getZipCode().equals("")) {
-            throw new IncorrectZipException(searchCriteria.getZipCode());
-        }
         Weather weatherResp = new Weather();
         boolean zipFound = false;
-        List<Weather> weatherList = repository.findAll();
-        for (Weather weather : weatherList) {
-            if (weather.getZipCode().equals(searchCriteria.getZipCode())) {
-                //weatherResp = weather;
-                weatherResp = setWeatherHeadline(weather);
-                zipFound = true;
-                break;
+        if (searchCriteria.getZipCode() == null || searchCriteria.getZipCode().equals("")) {
+            weatherResp.setStatusCode(520);
+            weatherResp.setMessage("BAD REQUEST");
+        } else {
+            List<Weather> weatherList = repository.findAll();
+            for (Weather weather : weatherList) {
+                if (weather.getZipCode().equals(searchCriteria.getZipCode())) {
+                    weatherResp = setWeatherHeadline(weather);
+                    zipFound = true;
+                    break;
+                }
             }
-        }
-        if (!zipFound) {
-            throw new ZipNotFoundException(searchCriteria.getZipCode());
+            if (!zipFound) {
+                weatherResp.setStatusCode(404);
+                weatherResp.setMessage("Zip code weather data not found.");
+            } else {
+                weatherResp.setStatusCode(200);
+                weatherResp.setMessage("SUCCESS");
+            }
         }
         return weatherResp;
     }

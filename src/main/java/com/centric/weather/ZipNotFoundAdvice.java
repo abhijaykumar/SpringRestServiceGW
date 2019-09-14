@@ -11,7 +11,7 @@ public class ZipNotFoundAdvice {
     @ResponseBody
     @ExceptionHandler(ZipNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String employeeNotFoundHandler(ZipNotFoundException ex) {
-        return ex.getMessage();
+    Exception employeeNotFoundHandler(ZipNotFoundException ex) {
+        return ex;
     }
 }
